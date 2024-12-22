@@ -1,0 +1,18 @@
+{
+    "id": 123123123,
+    "name": "Juan Rodriguez",
+    "email": "juan@rodriguez.org",
+    "password": "hunter2",
+    "created": "10-10-2023 12:04:23",
+    "modified": "07-11-2023 15:45:03",
+    "lastLogin": "20-11-2023 09:36:41",
+    "token": "aksjassfdy723rsda7y3hao7scydoHC.ODHaohdsaUIDH",
+    "isActive": true,
+    "phones": [
+        {
+            "number": "1234567",
+            "citycode": "1",
+            "contrycode": "57"
+        }
+    ]
+}
