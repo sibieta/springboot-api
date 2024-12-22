@@ -3,6 +3,7 @@ package com.sibieta.demo.rest;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,14 +30,14 @@ public class UserController {
 
 	@GetMapping(value = "/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public User getPost(@PathVariable Long id) {
+	public User getUser(@PathVariable Long id) {
 		return userService.getUser(id);
 	}
 
 	@PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void addComment(@RequestBody User user) {
-        userService.addUser(user);
+    public ResponseEntity<User> addUser(@RequestBody User user) {
+        User savedUser = userService.addUser(user);
+        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
 
