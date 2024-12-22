@@ -1,7 +1,10 @@
 package com.sibieta.demo.service;
 
+import org.springframework.stereotype.Service;
+
 import com.sibieta.demo.model.User;
 
+@Service
 public class UserService {
 
     public void addUser(User user) {
