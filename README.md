@@ -1,62 +1,57 @@
-##Proyeco de pruebas para postulacion a puesto de Desarrollador Backend##
+## Proyecto de Pruebas para Postulación a Puesto de Desarrollador Backend
 
-Creado con spring boot version 3.4.1
+**Creado con:** Spring Boot versión 3.4.1
 
-Requerimientos:
+### Requerimientos
+* **Java:** Versión 17 o superior
+* **Maven**
 
-Java version 17+
-
-Maven
-
-
-Descargar proyecto:
-
+### Descargar el Proyecto
+```bash
 git clone https://github.com/sibieta/postulacion-bci.git
-
 cd ./postulacion-bci
+```
 
-Compilar:
-
+### Compilar y Ejecutar
+```bash
 mvn clean package
-
-Correr:
-
 mvn spring-boot:run
+```
 
-Una vez corriendo ingresar con el navegador la url:
+### Acceder a la Aplicación
+Una vez en ejecución, ingresa la siguiente URL en tu navegador:
+
 http://localhost:8080
 
-Datos de autenticacion:
+Datos de Autenticación:
 
-Usuario: demotest
+* **Usuario:** demotest
 
-Passwd: 12345678
+* **Contraseña:** 12345678
 
-Al autenticar redirecciona al swagger
+### Swagger UI
+Al autenticarte, serás redirigido a la interfaz de Swagger:
 
 http://localhost:8080/swagger-ui/index.html
 
-Una vez ahi hay disponibles 2 endpoints
+### Endpoints Disponibles
 
-POST /user <- Para crear un nuevo usuario
+* **POST /user:** Crea un nuevo usuario.
 
-GET /user/{id} <- Para consultar un usuario existente con el id
+* **GET /user/{id}:** Consulta un usuario existente por su ID.
 
-En el boton "try" y "EXECUTE" es posible probar los endpoints.
-
-Ejemplo del cuerpo de mensjae JSON:
-
+### Ejemplo de Cuerpo de Mensaje JSON
+```json
 {
-    "name": "Juan Rodriguez",
-    "email": "juan@rodriguez.org",
-    "password": "hunter2",
-    "phones": [
-        {
-            "number": "1234567",
-            "citycode": "1",
-            "contrycode": "57"
-        }
-    ]
+  "name": "Juan Rodriguez",
+  "email": "juan@rodriguez.org",
+  "password": "hunter2",
+  "phones": [
+    {
+      "number": "1234567",
+      "citycode": "1",
+      "contrycode": "57"
+    }
+  ]
 }
-
-
+```
