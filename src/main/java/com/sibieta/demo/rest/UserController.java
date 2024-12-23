@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sibieta.demo.model.User;
+import com.sibieta.demo.model.dto.UserCreationResponseDTO;
 import com.sibieta.demo.model.dto.UserDTO;
 import com.sibieta.demo.service.UserService;
 
@@ -37,8 +38,8 @@ public class UserController {
 	}
 
 	@PostMapping
-    public ResponseEntity<UserDTO> addUser(@RequestBody User user) {
-        UserDTO savedUser = userService.addUser(user);
+    public ResponseEntity<UserCreationResponseDTO> addUser(@RequestBody User user) {
+        UserCreationResponseDTO savedUser = userService.addUser(user);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 

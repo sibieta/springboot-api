@@ -45,7 +45,7 @@ http://localhost:8080/swagger-ui/index.html
 {
   "name": "Juan Rodriguez",
   "email": "juan@rodriguez.org",
-  "password": "hunter2",
+  "password": "hunter2##H",
   "phones": [
     {
       "number": "1234567",

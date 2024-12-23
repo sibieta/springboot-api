@@ -2,6 +2,7 @@ package com.sibieta.demo;
 
 import com.sibieta.demo.config.JwtUtils;
 import com.sibieta.demo.model.User;
+import com.sibieta.demo.model.dto.UserCreationResponseDTO;
 import com.sibieta.demo.model.dto.UserDTO;
 import com.sibieta.demo.repository.UserRepository;
 import com.sibieta.demo.service.UserService;
@@ -56,12 +57,10 @@ public class UserServiceTest {
             return savedUser;
         });
 
-        UserDTO savedUserDTO = userService.addUser(user);
+        UserCreationResponseDTO savedUserDTO = userService.addUser(user);
 
         assertNotNull(savedUserDTO);
         assertEquals(1L, savedUserDTO.getId());
-        assertEquals("John Doe", savedUserDTO.getName());
-        assertEquals("john.doe@example.com", savedUserDTO.getEmail());
 
     }
 
