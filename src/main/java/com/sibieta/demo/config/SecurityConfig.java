@@ -2,6 +2,7 @@ package com.sibieta.demo.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,8 +29,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/user").permitAll() // Allow all access to /user
-                .anyRequest().authenticated() // Other requests require authentication
+                .requestMatchers("/user").permitAll()
+                .anyRequest().authenticated()
         ).formLogin(form -> form
                 .permitAll()
                 .defaultSuccessUrl("/swagger-ui/index.html", true)
@@ -37,17 +38,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-    // @Bean
-    // public SecurityFilterChain securityFilterChain(HttpSecurity http) throws
-    // Exception {
-    // http.authorizeHttpRequests(authorize -> authorize
-    // .anyRequest().authenticated())
-    // .formLogin(form -> form
-    // .permitAll());
-    // return http.build();
-
-    // }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
