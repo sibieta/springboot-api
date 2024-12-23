@@ -30,8 +30,8 @@ public class UserController {
 
 	@GetMapping(value = "/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public User getUser(@PathVariable Long id) {
-		return userService.getUser(id);
+	public ResponseEntity<User> getUser(@PathVariable Long id) {
+		return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
 	}
 
 	@PostMapping
