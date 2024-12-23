@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sibieta.demo.model.User;
+import com.sibieta.demo.model.dto.UserDTO;
 import com.sibieta.demo.service.UserService;
 
 @Controller
@@ -30,13 +31,14 @@ public class UserController {
 
 	@GetMapping(value = "/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<User> getUser(@PathVariable Long id) {
-		return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
+	public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
+		UserDTO userDTO = userService.getUser(id);
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
 	}
 
 	@PostMapping
-    public ResponseEntity<User> addUser(@RequestBody User user) {
-        User savedUser = userService.addUser(user);
+    public ResponseEntity<UserDTO> addUser(@RequestBody User user) {
+        UserDTO savedUser = userService.addUser(user);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 

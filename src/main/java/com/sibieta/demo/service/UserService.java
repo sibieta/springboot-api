@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.sibieta.demo.config.JwtUtils;
 import com.sibieta.demo.model.User;
+import com.sibieta.demo.model.dto.UserDTO;
 import com.sibieta.demo.repository.UserRepository;
 
 @Service
@@ -25,7 +26,7 @@ public class UserService {
     @Autowired
     private JwtUtils jwtUtils;
 
-    public User addUser(User user) {
+    public UserDTO addUser(User user) {
 
         if (!isValidEmail(user.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El correo no es válido.");
@@ -49,7 +50,13 @@ public class UserService {
         user.setActive(true);
 
         User savedUser = userRepository.save(user);
-        return savedUser;
+        return new UserDTO(savedUser);
+    }
+
+    public UserDTO getUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
+        return new UserDTO(user);
     }
 
     private boolean isValidPassword(String password) {
@@ -62,11 +69,6 @@ public class UserService {
         Pattern pattern = Pattern.compile(emailRegex);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
-    }
-
-    public User getUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
     }
 
 }
