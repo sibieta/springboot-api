@@ -55,3 +55,9 @@ http://localhost:8080/swagger-ui/index.html
   ]
 }
 ```
+
+## Arquitectura del Sistema
+
+![Diagrama de la Arquitectura](diagrama.jpg "Diagrama de la Arquitectura")
+
+Este diagrama ilustra los componentes y sus interacciones en la aplicación
