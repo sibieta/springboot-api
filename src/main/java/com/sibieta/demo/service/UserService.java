@@ -1,14 +1,13 @@
 package com.sibieta.demo.service;
 
 import java.util.Date;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,16 +24,28 @@ public class UserService {
     private UsuarioRepository userRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private JwtUtils jwtUtils;
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Value("${validation.email.regex}")
     private String emailRegex;
-    
+
     @Value("${validation.password.regex}")
     private String passwordRegex;
+
+    public String getEmailRegex() {
+        return emailRegex;
+    }
+
+    public String getPasswordRegex() {
+        return passwordRegex;
+    }
+
+    public UserService(BCryptPasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public UsuarioCreationResponseDTO addUser(Usuario user) {
 

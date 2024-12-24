@@ -13,8 +13,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -23,31 +27,31 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
+@TestPropertySource(locations = "classpath:application.properties")
 public class UserServiceTest {
 
-    @Mock
-    private UsuarioRepository userRepository;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private JwtUtils jwtUtils;
-
-    @InjectMocks
+    @Autowired
     private UserService userService;
 
-    @BeforeEach
-    void setUp(
-        @Value("${validation.email.pattern}") String emailPattern,
-        @Value("${validation.password.regex}") String passwordRegex
-        ) {
-        ReflectionTestUtils.setField(userService, "emailPattern", emailPattern);
-        ReflectionTestUtils.setField(userService, "passwordRegex", passwordRegex);
+    @MockBean
+    private UsuarioRepository userRepository;
+
+    @MockBean
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @MockBean
+    private JwtUtils jwtUtils;
+
+    @Test
+    void testInjections() {
+        assertNotNull(userService);
+        assertNotNull(userRepository);
+        assertNotNull(userService.getEmailRegex());
+        assertNotNull(userService.getPasswordRegex());
     }
 
     @Test
