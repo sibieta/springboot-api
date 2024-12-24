@@ -18,6 +18,7 @@ import com.sibieta.demo.model.dto.UsuarioDTO;
 import com.sibieta.demo.repository.UsuarioRepository;
 
 import java.util.UUID;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -37,12 +38,19 @@ public class UserService {
     @Value("${validation.password.regex}")
     private String passwordRegex;
 
+    @Value("${validation.uuid.regex}")
+    private String uuidRegex;
+
     public String getEmailRegex() {
         return emailRegex;
     }
 
     public String getPasswordRegex() {
         return passwordRegex;
+    }
+
+    public String getUuidRegex() {
+        return uuidRegex;
     }
 
     public UserService(BCryptPasswordEncoder passwordEncoder) {
@@ -77,8 +85,18 @@ public class UserService {
     }
 
     public UsuarioDTO getUser(UUID userId) {
-        Usuario user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
+
+        Optional<Usuario> usuarioOptional = userRepository.findById(userId);
+
+        if (usuarioOptional.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no existe");
+        }
+        if (!isValidUUID(userId.toString())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Formato invalido de Id");
+        }
+
+        Usuario user = usuarioOptional.get();
+
         return new UsuarioDTO(user);
     }
 
@@ -89,6 +107,12 @@ public class UserService {
     private boolean isValidEmail(String email) {
         Pattern pattern = Pattern.compile(emailRegex);
         Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
+    private boolean isValidUUID(String uuid) {
+        Pattern pattern = Pattern.compile(uuidRegex);
+        Matcher matcher = pattern.matcher(uuid);
         return matcher.matches();
     }
 

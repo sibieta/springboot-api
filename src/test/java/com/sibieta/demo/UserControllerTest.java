@@ -29,6 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 import java.util.UUID;
 
@@ -117,11 +118,11 @@ public class UserControllerTest {
     @WithMockUser(username = "demotest", roles = "USER")
     void testGetUserById_serverError() throws Exception {
         UUID uuid = UUID.randomUUID();
-        when(userService.getUser(uuid)).thenThrow(new RuntimeException("Something went wrong!"));
+        when(userService.getUser(uuid)).thenThrow(new RuntimeException("Algo estuvo mal!"));
 
         mockMvc.perform(get("/user/"+uuid))
-                .andExpect(status().isInternalServerError()) // Expect 500
-                .andExpect(jsonPath("$.mensaje").value("Internal Server Error: Something went wrong!"));
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.mensaje").value("Error interno del servidor: Algo estuvo mal!"));
     }
 
     @Test
@@ -138,6 +139,18 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.mensaje").value("Internal Server Error: Database error"));
+                .andExpect(jsonPath("$.mensaje").value("Error interno del servidor: Database error"));
+    }
+
+    @Test
+    @WithMockUser(username = "demotest", roles = "USER")
+    void testGetUser_invalidUuidFormat() throws Exception {
+        String invalidUuid = "invalid-uuid";
+
+        mockMvc.perform(get("/user/{id}", invalidUuid))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.mensaje").value("Formato invalido de Id"));
+
     }
 }

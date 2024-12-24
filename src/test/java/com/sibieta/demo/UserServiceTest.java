@@ -133,7 +133,7 @@ public class UserServiceTest {
         UUID uuid = UUID.randomUUID();
         when(userRepository.findById(uuid)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> userService.getUser(uuid));
+        assertThrows(ResponseStatusException.class, () -> userService.getUser(uuid));
 
     }
 
