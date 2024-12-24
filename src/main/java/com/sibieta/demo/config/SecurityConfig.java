@@ -26,7 +26,7 @@ public class SecurityConfig {
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
         UserDetails user = User.withUsername("demotest")
-                .password("12345678")
+                .password(new BCryptPasswordEncoder().encode("12345678"))
                 .roles("USER")
                 .build();
         return new InMemoryUserDetailsManager(user);
