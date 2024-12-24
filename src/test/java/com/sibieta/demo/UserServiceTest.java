@@ -1,18 +1,20 @@
 package com.sibieta.demo;
 
 import com.sibieta.demo.config.JwtUtils;
-import com.sibieta.demo.model.User;
-import com.sibieta.demo.model.dto.UserCreationResponseDTO;
-import com.sibieta.demo.model.dto.UserDTO;
-import com.sibieta.demo.repository.UserRepository;
+import com.sibieta.demo.model.Usuario;
+import com.sibieta.demo.model.dto.UsuarioCreationResponseDTO;
+import com.sibieta.demo.model.dto.UsuarioDTO;
+import com.sibieta.demo.repository.UsuarioRepository;
 import com.sibieta.demo.service.UserService;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
@@ -22,24 +24,38 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.UUID;
+
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
+@TestPropertySource(locations = "classpath:application.properties")
 public class UserServiceTest {
 
-    @Mock
-    private UserRepository userRepository;
+    @Autowired
+    private UserService userService;
 
-    @Mock
-    private PasswordEncoder passwordEncoder;
+    @MockBean
+    private UsuarioRepository userRepository;
 
-    @Mock
+    @MockBean
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @MockBean
     private JwtUtils jwtUtils;
 
-    @InjectMocks
-    private UserService userService;
+    @Test
+    void testInjections() {
+        assertNotNull(userService);
+        assertNotNull(userRepository);
+        assertNotNull(userService.getEmailRegex());
+        assertNotNull(userService.getPasswordRegex());
+    }
 
     @Test
     void testAddUser_validUser() {
-        User user = new User();
+        Usuario user = new Usuario();
+        UUID uuid = UUID.randomUUID();
+        user.setId(uuid);
         user.setName("John Doe");
         user.setEmail("john.doe@example.com");
         user.setPassword("Test1234@");
@@ -48,25 +64,25 @@ public class UserServiceTest {
 
         when(jwtUtils.generateToken(any())).thenReturn("testToken");
 
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
-            User savedUser = invocation.getArgument(0);
-            savedUser.setId(1L);
+        when(userRepository.save(any(Usuario.class))).thenAnswer(invocation -> {
+            Usuario savedUser = invocation.getArgument(0);
+            savedUser.setId(uuid);
             savedUser.setCreated(new Date());
             savedUser.setModified(new Date());
             savedUser.setLastLogin(new Date());
             return savedUser;
         });
 
-        UserCreationResponseDTO savedUserDTO = userService.addUser(user);
+        UsuarioCreationResponseDTO savedUserDTO = userService.addUser(user);
 
         assertNotNull(savedUserDTO);
-        assertEquals(1L, savedUserDTO.getId());
+        assertEquals(uuid, savedUserDTO.getId());
 
     }
 
     @Test
     void testAddUser_duplicateEmail() {
-        User user = new User();
+        Usuario user = new Usuario();
         user.setEmail("duplicate@example.com");
 
         when(userRepository.existsByEmail(user.getEmail())).thenReturn(true);
@@ -76,7 +92,7 @@ public class UserServiceTest {
 
     @Test
     void testAddUser_invalidEmail() {
-        User user = new User();
+        Usuario user = new Usuario();
         user.setEmail("invalid-email");
 
         assertThrows(ResponseStatusException.class, () -> userService.addUser(user));
@@ -84,7 +100,7 @@ public class UserServiceTest {
 
     @Test
     void testAddUser_invalidPassword() {
-        User user = new User();
+        Usuario user = new Usuario();
         user.setEmail("test@example.com");
         user.setPassword("invalid");
 
@@ -97,25 +113,27 @@ public class UserServiceTest {
 
     @Test
     void testGetUser_existingUser() {
-        User user = new User();
-        user.setId(1L);
+        Usuario user = new Usuario();
+        UUID uuid = UUID.randomUUID();
+        user.setId(uuid);
         user.setName("Test User");
         user.setEmail("test@example.com");
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.findById(uuid)).thenReturn(Optional.of(user));
 
-        UserDTO userDTO = userService.getUser(1L);
+        UsuarioDTO userDTO = userService.getUser(uuid);
 
         assertNotNull(userDTO);
-        assertEquals(1L, userDTO.getId());
+        assertEquals(uuid, userDTO.getId());
 
     }
 
     @Test
     void testGetUser_nonExistingUser() {
-        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+        UUID uuid = UUID.randomUUID();
+        when(userRepository.findById(uuid)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> userService.getUser(99L));
+        assertThrows(ResponseStatusException.class, () -> userService.getUser(uuid));
 
     }
 

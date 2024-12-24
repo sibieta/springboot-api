@@ -3,10 +3,12 @@ package com.sibieta.demo.model.dto;
 import java.util.Date;
 import java.util.List;
 
-import com.sibieta.demo.model.User;
+import com.sibieta.demo.model.Usuario;
 
-public class UserDTO {
-    private Long id;
+import java.util.UUID;
+
+public class UsuarioDTO {
+    private UUID id;
     private String name;
     private String email;
     private Date created;
@@ -16,7 +18,7 @@ public class UserDTO {
     private boolean isActive;
     private List<PhoneDTO> phones;
 
-    public UserDTO(User user) {
+    public UsuarioDTO(Usuario user) {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
@@ -28,11 +30,15 @@ public class UserDTO {
         this.phones = user.getPhones().stream().map(phone -> new PhoneDTO(phone)).toList();
     }
 
-    public Long getId() {
+    public UsuarioDTO() {
+        //TODO Auto-generated constructor stub
+    }
+
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

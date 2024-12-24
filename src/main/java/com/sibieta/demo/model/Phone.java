@@ -21,7 +21,7 @@ public class Phone {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private Usuario usuario;
 
     public Long getId() {
         return id;
@@ -55,13 +55,17 @@ public class Phone {
         this.contrycode = contrycode;
     }
 
-    public User getUser() {
-        return user;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
+
+    
+
+    
 
     
 }

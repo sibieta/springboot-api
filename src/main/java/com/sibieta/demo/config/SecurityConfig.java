@@ -1,5 +1,6 @@
 package com.sibieta.demo.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -18,9 +19,14 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
     public InMemoryUserDetailsManager userDetailsService() {
         UserDetails user = User.withUsername("demotest")
-                .password(passwordEncoder().encode("12345678"))
+                .password(new BCryptPasswordEncoder().encode("12345678"))
                 .roles("USER")
                 .build();
         return new InMemoryUserDetailsManager(user);
@@ -37,11 +43,6 @@ public class SecurityConfig {
         ).csrf(csrf -> csrf.disable());
 
         return http.build();
-    }
-
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
 }
