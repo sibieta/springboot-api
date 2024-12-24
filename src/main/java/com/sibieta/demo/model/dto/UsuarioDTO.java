@@ -1,47 +1,36 @@
-package com.sibieta.demo.model;
+package com.sibieta.demo.model.dto;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import com.sibieta.demo.model.Usuario;
 
-@Entity
-@Table(name = "users")
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class UsuarioDTO {
     private Long id;
-
     private String name;
     private String email;
-    private String password;
-
-    @Temporal(TemporalType.TIMESTAMP)
     private Date created;
-
-    @Temporal(TemporalType.TIMESTAMP)
     private Date modified;
-
-    @Temporal(TemporalType.TIMESTAMP)
     private Date lastLogin;
-
     private String token;
     private boolean isActive;
+    private List<PhoneDTO> phones;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id") // Foreign key in the Phone entity
-    private List<Phone> phones = new ArrayList<>();
+    public UsuarioDTO(Usuario user) {
+        this.id = user.getId();
+        this.name = user.getName();
+        this.email = user.getEmail();
+        this.created = user.getCreated();
+        this.modified = user.getModified();
+        this.lastLogin = user.getLastLogin();
+        this.token = user.getToken();
+        this.isActive = user.isActive();
+        this.phones = user.getPhones().stream().map(phone -> new PhoneDTO(phone)).toList();
+    }
+
+    public UsuarioDTO() {
+        //TODO Auto-generated constructor stub
+    }
 
     public Long getId() {
         return id;
@@ -65,14 +54,6 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public Date getCreated() {
@@ -115,14 +96,14 @@ public class User {
         this.isActive = isActive;
     }
 
-    public List<Phone> getPhones() {
+    public List<PhoneDTO> getPhones() {
         return phones;
     }
 
-    public void setPhones(List<Phone> phones) {
+    public void setPhones(List<PhoneDTO> phones) {
         this.phones = phones;
     }
-
     
-}
+    
 
+}

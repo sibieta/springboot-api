@@ -4,11 +4,11 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.sibieta.demo.model.User;
+import com.sibieta.demo.model.Usuario;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     boolean existsByEmail(String email);
-    Optional<User> findByEmail(String email);
+    Optional<Usuario> findByEmail(String email);
     
 }

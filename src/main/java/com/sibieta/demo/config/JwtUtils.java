@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 
-import com.sibieta.demo.model.User;
+import com.sibieta.demo.model.Usuario;
 
 @Component
 public class JwtUtils {
@@ -18,7 +18,7 @@ public class JwtUtils {
     private String secretKey;
     private final long expirationTimeMillis = 86400000;
 
-    public String generateToken(User user) {
+    public String generateToken(Usuario user) {
         return Jwts.builder()
                 .setSubject(user.getEmail().toString())
                 .setIssuedAt(new Date())

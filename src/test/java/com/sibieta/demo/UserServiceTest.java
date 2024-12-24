@@ -1,18 +1,21 @@
 package com.sibieta.demo;
 
 import com.sibieta.demo.config.JwtUtils;
-import com.sibieta.demo.model.User;
-import com.sibieta.demo.model.dto.UserCreationResponseDTO;
-import com.sibieta.demo.model.dto.UserDTO;
-import com.sibieta.demo.repository.UserRepository;
+import com.sibieta.demo.model.Usuario;
+import com.sibieta.demo.model.dto.UsuarioCreationResponseDTO;
+import com.sibieta.demo.model.dto.UsuarioDTO;
+import com.sibieta.demo.repository.UsuarioRepository;
 import com.sibieta.demo.service.UserService;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
@@ -20,13 +23,14 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
     @Mock
-    private UserRepository userRepository;
+    private UsuarioRepository userRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -37,9 +41,18 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+    @BeforeEach
+    void setUp(
+        @Value("${validation.email.pattern}") String emailPattern,
+        @Value("${validation.password.regex}") String passwordRegex
+        ) {
+        ReflectionTestUtils.setField(userService, "emailPattern", emailPattern);
+        ReflectionTestUtils.setField(userService, "passwordRegex", passwordRegex);
+    }
+
     @Test
     void testAddUser_validUser() {
-        User user = new User();
+        Usuario user = new Usuario();
         user.setName("John Doe");
         user.setEmail("john.doe@example.com");
         user.setPassword("Test1234@");
@@ -48,8 +61,8 @@ public class UserServiceTest {
 
         when(jwtUtils.generateToken(any())).thenReturn("testToken");
 
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
-            User savedUser = invocation.getArgument(0);
+        when(userRepository.save(any(Usuario.class))).thenAnswer(invocation -> {
+            Usuario savedUser = invocation.getArgument(0);
             savedUser.setId(1L);
             savedUser.setCreated(new Date());
             savedUser.setModified(new Date());
@@ -57,7 +70,7 @@ public class UserServiceTest {
             return savedUser;
         });
 
-        UserCreationResponseDTO savedUserDTO = userService.addUser(user);
+        UsuarioCreationResponseDTO savedUserDTO = userService.addUser(user);
 
         assertNotNull(savedUserDTO);
         assertEquals(1L, savedUserDTO.getId());
@@ -66,7 +79,7 @@ public class UserServiceTest {
 
     @Test
     void testAddUser_duplicateEmail() {
-        User user = new User();
+        Usuario user = new Usuario();
         user.setEmail("duplicate@example.com");
 
         when(userRepository.existsByEmail(user.getEmail())).thenReturn(true);
@@ -76,7 +89,7 @@ public class UserServiceTest {
 
     @Test
     void testAddUser_invalidEmail() {
-        User user = new User();
+        Usuario user = new Usuario();
         user.setEmail("invalid-email");
 
         assertThrows(ResponseStatusException.class, () -> userService.addUser(user));
@@ -84,7 +97,7 @@ public class UserServiceTest {
 
     @Test
     void testAddUser_invalidPassword() {
-        User user = new User();
+        Usuario user = new Usuario();
         user.setEmail("test@example.com");
         user.setPassword("invalid");
 
@@ -97,14 +110,14 @@ public class UserServiceTest {
 
     @Test
     void testGetUser_existingUser() {
-        User user = new User();
+        Usuario user = new Usuario();
         user.setId(1L);
         user.setName("Test User");
         user.setEmail("test@example.com");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        UserDTO userDTO = userService.getUser(1L);
+        UsuarioDTO userDTO = userService.getUser(1L);
 
         assertNotNull(userDTO);
         assertEquals(1L, userDTO.getId());

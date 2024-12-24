@@ -1,0 +1,21 @@
+[5:00 p. m., 23/12/2024] +56 9 4478 2241: 
+- id de usuario está en formato numérico.
+- ⁠existe swagger pero falta desarrollar métodos de casos de error en los controllers creados
+- ⁠falta testeo al controller, repository
+- ⁠el control de error está solo asociado al error 400, no existe el error 500 detallado con una excepción general
+
+[5:00 p. m., 23/12/2024] +56 9 4478 2241: Eso es lo que levantaron
+[5:01 p. m., 23/12/2024] +56 9 4478 2241: Como observaciones
+[5:03 p. m., 23/12/2024] Sebastian: ok duda con esto: ⁠existe swagger pero falta desarrollar métodos de casos de error en los controllers creados. No se a que se refiere con "metodos de casos de error"
+[5:04 p. m., 23/12/2024] Sebastian: Y cual es el tiempo, para incluir estos fixes
+[5:05 p. m., 23/12/2024] +56 9 4478 2241: Entre el martes y jueves
+[5:05 p. m., 23/12/2024] +56 9 4478 2241: Si es posible
+[5:05 p. m., 23/12/2024] Sebastian: ok me puedes averiguar mas sobre mi duda porfavor
+[5:06 p. m., 23/12/2024] +56 9 4478 2241: Estoy consultando
+[5:06 p. m., 23/12/2024] Sebastian: gracias
+
+[5:14 p. m., 23/12/2024] +56 9 4478 2241: Se refiere a que solo pusiste el caso de éxito en los controllers, entonces se debe desarrollar en los casos de error que haya equivocación de registro
+[5:14 p. m., 23/12/2024] +56 9 4478 2241: Como por ejemplo Invalid ID supplied
+[5:14 p. m., 23/12/2024] +56 9 4478 2241: No sé si se entiende mejor
+
+[5:30 p. m., 23/12/2024] Sebastian: si un poco hare lo que pueda con eso... el jueves les aviso para que revisen gracias
