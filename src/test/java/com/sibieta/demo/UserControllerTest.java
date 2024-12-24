@@ -80,8 +80,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.email").value("test@example.com"));
 
         // mockMvc.perform(get("/user/1"))
-        //         .andExpect(status().isFound())
-        //         .andExpect(MockMvcResultMatchers.redirectedUrl("/swagger-ui/index.html"));
+        // .andExpect(status().isFound())
+        // .andExpect(MockMvcResultMatchers.redirectedUrl("/swagger-ui/index.html"));
 
     }
 
@@ -110,5 +110,32 @@ public class UserControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1));
 
+    }
+
+    @Test
+    @WithMockUser(username = "demotest", roles = "USER")
+    void testGetUserById_serverError() throws Exception {
+        when(userService.getUser(1L)).thenThrow(new RuntimeException("Something went wrong!"));
+
+        mockMvc.perform(get("/user/1"))
+                .andExpect(status().isInternalServerError()) // Expect 500
+                .andExpect(jsonPath("$.mensaje").value("Internal Server Error: Something went wrong!"));
+    }
+
+    @Test
+    @WithMockUser(username = "demotest", roles = "USER")
+    void testCreateUser_serverError() throws Exception {
+        Usuario user = new Usuario();
+        user.setName("John Doe");
+        user.setEmail("john.doe@example.com");
+        user.setPassword("Test1234@");
+
+        when(userService.addUser(any(Usuario.class))).thenThrow(new RuntimeException("Database error"));
+
+        mockMvc.perform(post("/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.mensaje").value("Internal Server Error: Database error"));
     }
 }
