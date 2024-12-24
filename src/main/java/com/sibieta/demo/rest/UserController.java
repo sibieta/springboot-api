@@ -19,6 +19,8 @@ import com.sibieta.demo.model.dto.UsuarioCreationResponseDTO;
 import com.sibieta.demo.model.dto.UsuarioDTO;
 import com.sibieta.demo.service.UserService;
 
+import java.util.UUID;
+
 @Controller
 @RestController
 @RequestMapping("/user")
@@ -29,7 +31,7 @@ public class UserController {
 
 	@GetMapping(value = "/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<UsuarioDTO> getUser(@PathVariable Long id) {
+	public ResponseEntity<UsuarioDTO> getUser(@PathVariable UUID id) {
 		UsuarioDTO userDTO = userService.getUser(id);
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
 	}

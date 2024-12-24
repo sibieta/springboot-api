@@ -30,6 +30,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.UUID;
+
 @WebMvcTest(UserController.class)
 @Import(SecurityConfig.class)
 public class UserControllerTest {
@@ -62,7 +64,8 @@ public class UserControllerTest {
     @WithMockUser(username = "demotest", roles = "USER")
     void testGetUserById_validId() throws Exception {
         UsuarioDTO userDTO = new UsuarioDTO();
-        userDTO.setId(1L);
+        UUID uuid = UUID.randomUUID();
+        userDTO.setId(uuid);
         userDTO.setName("Test User");
         userDTO.setEmail("test@example.com");
         userDTO.setPhones(null);
@@ -71,17 +74,13 @@ public class UserControllerTest {
         userDTO.setLastLogin(new Date());
         userDTO.setToken("testToken");
 
-        when(userService.getUser(1L)).thenReturn(userDTO);
+        when(userService.getUser(uuid)).thenReturn(userDTO);
 
-        mockMvc.perform(get("/user/1"))
+        mockMvc.perform(get("/user/"+uuid))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.id").value(uuid.toString()))
                 .andExpect(jsonPath("$.name").value("Test User"))
                 .andExpect(jsonPath("$.email").value("test@example.com"));
-
-        // mockMvc.perform(get("/user/1"))
-        // .andExpect(status().isFound())
-        // .andExpect(MockMvcResultMatchers.redirectedUrl("/swagger-ui/index.html"));
 
     }
 
@@ -89,12 +88,14 @@ public class UserControllerTest {
     @WithMockUser(username = "demotest", roles = "USER")
     void testCreateUser_validUser() throws Exception {
         Usuario user = new Usuario();
+        UUID uuid = UUID.randomUUID();
+        user.setId(uuid);
         user.setName("John Doe");
         user.setEmail("john.doe@example.com");
         user.setPassword("Test1234@");
 
         UsuarioCreationResponseDTO createdUserDTO = new UsuarioCreationResponseDTO();
-        createdUserDTO.setId(1L);
+        createdUserDTO.setId(uuid);
         createdUserDTO.setCreated(new Date());
         createdUserDTO.setModified(new Date());
         createdUserDTO.setLastLogin(new Date());
@@ -108,16 +109,17 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1));
+                .andExpect(jsonPath("$.id").value(uuid.toString()));
 
     }
 
     @Test
     @WithMockUser(username = "demotest", roles = "USER")
     void testGetUserById_serverError() throws Exception {
-        when(userService.getUser(1L)).thenThrow(new RuntimeException("Something went wrong!"));
+        UUID uuid = UUID.randomUUID();
+        when(userService.getUser(uuid)).thenThrow(new RuntimeException("Something went wrong!"));
 
-        mockMvc.perform(get("/user/1"))
+        mockMvc.perform(get("/user/"+uuid))
                 .andExpect(status().isInternalServerError()) // Expect 500
                 .andExpect(jsonPath("$.mensaje").value("Internal Server Error: Something went wrong!"));
     }

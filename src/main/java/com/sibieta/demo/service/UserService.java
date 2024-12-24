@@ -17,6 +17,8 @@ import com.sibieta.demo.model.dto.UsuarioCreationResponseDTO;
 import com.sibieta.demo.model.dto.UsuarioDTO;
 import com.sibieta.demo.repository.UsuarioRepository;
 
+import java.util.UUID;
+
 @Service
 public class UserService {
 
@@ -74,7 +76,7 @@ public class UserService {
         return new UsuarioCreationResponseDTO(savedUser);
     }
 
-    public UsuarioDTO getUser(Long userId) {
+    public UsuarioDTO getUser(UUID userId) {
         Usuario user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
         return new UsuarioDTO(user);

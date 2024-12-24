@@ -7,19 +7,14 @@ import com.sibieta.demo.model.dto.UsuarioDTO;
 import com.sibieta.demo.repository.UsuarioRepository;
 import com.sibieta.demo.service.UserService;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
@@ -28,6 +23,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+
+import java.util.UUID;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -57,6 +54,8 @@ public class UserServiceTest {
     @Test
     void testAddUser_validUser() {
         Usuario user = new Usuario();
+        UUID uuid = UUID.randomUUID();
+        user.setId(uuid);
         user.setName("John Doe");
         user.setEmail("john.doe@example.com");
         user.setPassword("Test1234@");
@@ -67,7 +66,7 @@ public class UserServiceTest {
 
         when(userRepository.save(any(Usuario.class))).thenAnswer(invocation -> {
             Usuario savedUser = invocation.getArgument(0);
-            savedUser.setId(1L);
+            savedUser.setId(uuid);
             savedUser.setCreated(new Date());
             savedUser.setModified(new Date());
             savedUser.setLastLogin(new Date());
@@ -77,7 +76,7 @@ public class UserServiceTest {
         UsuarioCreationResponseDTO savedUserDTO = userService.addUser(user);
 
         assertNotNull(savedUserDTO);
-        assertEquals(1L, savedUserDTO.getId());
+        assertEquals(uuid, savedUserDTO.getId());
 
     }
 
@@ -115,24 +114,26 @@ public class UserServiceTest {
     @Test
     void testGetUser_existingUser() {
         Usuario user = new Usuario();
-        user.setId(1L);
+        UUID uuid = UUID.randomUUID();
+        user.setId(uuid);
         user.setName("Test User");
         user.setEmail("test@example.com");
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.findById(uuid)).thenReturn(Optional.of(user));
 
-        UsuarioDTO userDTO = userService.getUser(1L);
+        UsuarioDTO userDTO = userService.getUser(uuid);
 
         assertNotNull(userDTO);
-        assertEquals(1L, userDTO.getId());
+        assertEquals(uuid, userDTO.getId());
 
     }
 
     @Test
     void testGetUser_nonExistingUser() {
-        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+        UUID uuid = UUID.randomUUID();
+        when(userRepository.findById(uuid)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> userService.getUser(99L));
+        assertThrows(IllegalArgumentException.class, () -> userService.getUser(uuid));
 
     }
 

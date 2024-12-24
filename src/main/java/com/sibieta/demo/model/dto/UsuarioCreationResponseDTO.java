@@ -4,8 +4,10 @@ import java.util.Date;
 
 import com.sibieta.demo.model.Usuario;
 
+import java.util.UUID;
+
 public class UsuarioCreationResponseDTO {
-    private Long id;
+    private UUID id;
     private Date created;
     private Date modified;
     private Date lastLogin;
@@ -28,7 +30,7 @@ public class UsuarioCreationResponseDTO {
     }
 
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -58,7 +60,7 @@ public class UsuarioCreationResponseDTO {
     }
 
 
-    public Long getId() { return id; }
+    public UUID getId() { return id; }
     public Date getCreated() { return created; }
     public Date getModified() { return modified; }
     public Date getLastLogin() { return lastLogin; }

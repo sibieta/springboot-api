@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.sibieta.demo.model.Usuario;
 
-public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+import java.util.UUID;
+
+public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
 
     boolean existsByEmail(String email);
     Optional<Usuario> findByEmail(String email);

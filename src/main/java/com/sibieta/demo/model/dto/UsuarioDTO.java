@@ -5,8 +5,10 @@ import java.util.List;
 
 import com.sibieta.demo.model.Usuario;
 
+import java.util.UUID;
+
 public class UsuarioDTO {
-    private Long id;
+    private UUID id;
     private String name;
     private String email;
     private Date created;
@@ -32,11 +34,11 @@ public class UsuarioDTO {
         //TODO Auto-generated constructor stub
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
