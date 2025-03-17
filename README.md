@@ -8,8 +8,8 @@
 
 ### Descargar el Proyecto
 ```bash
-git clone https://github.com/sibieta/postulacion-bci.git
-cd ./postulacion-bci
+git clone https://github.com/sibieta/springboot-api.git
+cd ./springboot-api
 ```
 
 ### Compilar y Ejecutar
