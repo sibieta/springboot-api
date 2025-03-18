@@ -38,7 +38,11 @@ http://localhost:8080/swagger-ui/index.html
 
 * **POST /user:** Crea un nuevo usuario.
 
+* **Estos metodos de lectura requieren pasar el header HTTP Authorization: Bearer TOKEN donde este se obtiene en la respuesta al crear un nuevo usuario.
+
 * **GET /user/{id}:** Consulta un usuario existente por su ID.
+
+* **GET /user:** Obtiene un listado de usuarios ya creados
 
 ### Ejemplo de Cuerpo de Mensaje JSON
 ```json
