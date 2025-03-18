@@ -90,7 +90,11 @@ public class UserService {
     
     }
 
-    public UsuarioDTO getUser(UUID userId) {
+    public UsuarioDTO getUser(UUID userId, String jwt) {
+
+        if(!jwtUtils.validateToken(jwt)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No autorizado");
+        }
 
         Optional<Usuario> usuarioOptional = userRepository.findById(userId);
 

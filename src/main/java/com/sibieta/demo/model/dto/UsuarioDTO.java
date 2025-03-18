@@ -14,7 +14,6 @@ public class UsuarioDTO {
     private Date created;
     private Date modified;
     private Date lastLogin;
-    private String token;
     private boolean isActive;
     private List<PhoneDTO> phones;
 
@@ -25,7 +24,6 @@ public class UsuarioDTO {
         this.created = user.getCreated();
         this.modified = user.getModified();
         this.lastLogin = user.getLastLogin();
-        this.token = user.getToken();
         this.isActive = user.isActive();
         this.phones = user.getPhones().stream().map(phone -> new PhoneDTO(phone)).toList();
     }
@@ -80,14 +78,6 @@ public class UsuarioDTO {
 
     public void setLastLogin(Date lastLogin) {
         this.lastLogin = lastLogin;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public boolean isActive() {
