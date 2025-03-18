@@ -120,8 +120,9 @@ public class UserServiceTest {
         user.setEmail("test@example.com");
 
         when(userRepository.findById(uuid)).thenReturn(Optional.of(user));
-
-        UsuarioDTO userDTO = userService.getUser(uuid);
+        String jwt = "mocked-jwt-token";
+        when(jwtUtils.validateToken(jwt)).thenReturn(true);
+        UsuarioDTO userDTO = userService.getUser(uuid,jwt);
 
         assertNotNull(userDTO);
         assertEquals(uuid, userDTO.getId());
@@ -133,7 +134,7 @@ public class UserServiceTest {
         UUID uuid = UUID.randomUUID();
         when(userRepository.findById(uuid)).thenReturn(Optional.empty());
 
-        assertThrows(ResponseStatusException.class, () -> userService.getUser(uuid));
+        assertThrows(ResponseStatusException.class, () -> userService.getUser(uuid, null));
 
     }
 

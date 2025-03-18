@@ -1,6 +1,7 @@
 package com.sibieta.demo.config;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,7 +20,9 @@ public class GlobalExceptionHandler {
         if (ex.getStatusCode() == HttpStatus.BAD_REQUEST || ex.getStatusCode() == HttpStatus.NOT_FOUND) {
             String errorMessage = ex.getReason();
             errorResponse.put("mensaje", errorMessage);
-        } else {
+        } else if(ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+            errorResponse.put("mensaje", "No autorizado");
+        }else {
             errorResponse.put("mensaje", "Error interno del servidor");
         }
         return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);

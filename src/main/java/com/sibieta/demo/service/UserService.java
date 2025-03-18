@@ -1,8 +1,10 @@
 package com.sibieta.demo.service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,15 +62,15 @@ public class UserService {
     public UsuarioCreationResponseDTO addUser(Usuario user) {
 
         if (!isValidEmail(user.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El correo no es válido.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El email no es válido.");
         }
 
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El correo ya registrado");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Este email ya fue registrado");
         }
 
         if (!isValidPassword(user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La contraseña no cumple con el estandar.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La contraseña no cumple con el estandar. La contraseña debe tener al menos una letra mayúscula, al menos una letra minúscula, a lo menos dos números y un largo mínimo de 6 caracteres.");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -76,20 +78,28 @@ public class UserService {
         user.setModified(new Date());
         user.setLastLogin(new Date());
 
-        user.setToken(jwtUtils.generateToken(user));
-
         user.setActive(true);
 
         Usuario savedUser = userRepository.save(user);
-        return new UsuarioCreationResponseDTO(savedUser);
+        
+        //Token JWT no se persiste en la BD
+        UsuarioCreationResponseDTO userDto = new UsuarioCreationResponseDTO(savedUser);
+        userDto.setToken(jwtUtils.generateToken(user));
+
+        return userDto;
+    
     }
 
-    public UsuarioDTO getUser(UUID userId) {
+    public UsuarioDTO getUser(UUID userId, String jwt) {
+
+        if(!jwtUtils.validateToken(jwt)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No autorizado");
+        }
 
         Optional<Usuario> usuarioOptional = userRepository.findById(userId);
 
         if (usuarioOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no existe");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no existente");
         }
         if (!isValidUUID(userId.toString())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Formato invalido de Id");
@@ -98,6 +108,15 @@ public class UserService {
         Usuario user = usuarioOptional.get();
 
         return new UsuarioDTO(user);
+    }
+
+    public List<UsuarioDTO> getUsers(String jwt) {
+        if(!jwtUtils.validateToken(jwt)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No autorizado");
+        }
+        return userRepository.findAll().stream()
+                .map(UsuarioDTO::new)
+                .collect(Collectors.toList());
     }
 
     private boolean isValidPassword(String password) {

@@ -20,7 +20,6 @@ public class UsuarioCreationResponseDTO {
         this.created = user.getCreated();
         this.modified = user.getModified();
         this.lastLogin = user.getLastLogin();
-        this.token = user.getToken();
         this.isActive = user.isActive();
     }
 
