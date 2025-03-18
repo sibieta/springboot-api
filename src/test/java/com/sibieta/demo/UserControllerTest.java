@@ -1,7 +1,9 @@
 package com.sibieta.demo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sibieta.demo.config.JwtUtils;
 import com.sibieta.demo.config.SecurityConfig;
+import com.sibieta.demo.model.Phone;
 import com.sibieta.demo.model.Usuario;
 import com.sibieta.demo.model.dto.UsuarioCreationResponseDTO;
 import com.sibieta.demo.model.dto.UsuarioDTO;
@@ -20,7 +22,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -64,20 +69,21 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "demotest", roles = "USER")
     void testGetUserById_validId() throws Exception {
-        UsuarioDTO userDTO = new UsuarioDTO();
+        Usuario user = new Usuario();
         UUID uuid = UUID.randomUUID();
-        userDTO.setId(uuid);
-        userDTO.setName("Test User");
-        userDTO.setEmail("test@example.com");
-        userDTO.setPhones(null);
-        userDTO.setCreated(new Date());
-        userDTO.setModified(new Date());
-        userDTO.setLastLogin(new Date());
-        userDTO.setToken("testToken");
+        user.setId(uuid);
+        user.setName("Test User");
+        user.setEmail("test@example.com");
+        user.setPhones(createPhoneList());
+        user.setCreated(new Date());
+        user.setModified(new Date());
+        user.setLastLogin(new Date());
 
-        when(userService.getUser(uuid)).thenReturn(userDTO);
+        UsuarioDTO userDTO = new UsuarioDTO(user);
+        String jwt = "mocked-jwt-token";
+        when(userService.getUser(uuid,jwt)).thenReturn(userDTO);        
 
-        mockMvc.perform(get("/user/"+uuid))
+        mockMvc.perform(get("/user/"+uuid).header("Authorization", "Bearer "+jwt))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(uuid.toString()))
                 .andExpect(jsonPath("$.name").value("Test User"))
@@ -118,9 +124,10 @@ public class UserControllerTest {
     @WithMockUser(username = "demotest", roles = "USER")
     void testGetUserById_serverError() throws Exception {
         UUID uuid = UUID.randomUUID();
-        when(userService.getUser(uuid)).thenThrow(new RuntimeException("Algo estuvo mal!"));
+        String jwt = "mocked-jwt-token";
+        when(userService.getUser(uuid, jwt)).thenThrow(new RuntimeException("Algo estuvo mal!"));
 
-        mockMvc.perform(get("/user/"+uuid))
+        mockMvc.perform(get("/user/"+uuid).header("Authorization", "Bearer "+jwt))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.mensaje").value("Error interno del servidor: Algo estuvo mal!"));
     }
@@ -146,11 +153,32 @@ public class UserControllerTest {
     @WithMockUser(username = "demotest", roles = "USER")
     void testGetUser_invalidUuidFormat() throws Exception {
         String invalidUuid = "invalid-uuid";
+        String jwt = "mocked-jwt-token";
 
-        mockMvc.perform(get("/user/{id}", invalidUuid))
+        mockMvc.perform(get("/user/{id}", invalidUuid).header("Authorization", "Bearer "+jwt))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.mensaje").value("Formato invalido de Id"));
 
+    }
+
+    // Helper method to create a list of Phones
+    private List<Phone> createPhoneList() {
+        List<Phone> phones = new ArrayList<>();
+        phones.add(createPhone("57", "1", "3101234567"));
+        phones.add(createPhone("57", "1", "3119876543"));
+        phones.add(createPhone("57", "2", "3125551212"));
+        phones.add(createPhone("57", "3", "3134445566"));
+        phones.add(createPhone("57", "4", "3147778899"));
+        return phones;
+    }
+
+    // Helper method to create a Phone object
+    private Phone createPhone(String countryCode, String cityCode, String number) {
+        Phone phone = new Phone();
+        phone.setContrycode(countryCode);
+        phone.setCitycode(cityCode);
+        phone.setNumber(number);
+        return phone;
     }
 }
