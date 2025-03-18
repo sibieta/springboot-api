@@ -42,7 +42,6 @@ public class Usuario {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastLogin;
 
-    private String token;
     private boolean isActive;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -103,14 +102,6 @@ public class Usuario {
 
     public void setLastLogin(Date lastLogin) {
         this.lastLogin = lastLogin;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public boolean isActive() {

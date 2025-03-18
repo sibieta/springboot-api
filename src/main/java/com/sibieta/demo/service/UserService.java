@@ -1,8 +1,10 @@
 package com.sibieta.demo.service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,7 +66,7 @@ public class UserService {
         }
 
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El correo ya registrado");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El correo ya fue registrado");
         }
 
         if (!isValidPassword(user.getPassword())) {
@@ -76,12 +78,16 @@ public class UserService {
         user.setModified(new Date());
         user.setLastLogin(new Date());
 
-        user.setToken(jwtUtils.generateToken(user));
-
         user.setActive(true);
 
         Usuario savedUser = userRepository.save(user);
-        return new UsuarioCreationResponseDTO(savedUser);
+        
+        //Token JWT no se persiste en la BD
+        UsuarioCreationResponseDTO userDto = new UsuarioCreationResponseDTO(savedUser);
+        userDto.setToken(jwtUtils.generateToken(user));
+
+        return userDto;
+    
     }
 
     public UsuarioDTO getUser(UUID userId) {
@@ -98,6 +104,15 @@ public class UserService {
         Usuario user = usuarioOptional.get();
 
         return new UsuarioDTO(user);
+    }
+
+    public List<UsuarioDTO> getUsers(String jwt) {
+        if(!jwtUtils.validateToken(jwt)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No autorizado");
+        }
+        return userRepository.findAll().stream()
+                .map(UsuarioDTO::new)
+                .collect(Collectors.toList());
     }
 
     private boolean isValidPassword(String password) {
