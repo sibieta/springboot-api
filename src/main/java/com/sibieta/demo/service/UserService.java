@@ -62,15 +62,15 @@ public class UserService {
     public UsuarioCreationResponseDTO addUser(Usuario user) {
 
         if (!isValidEmail(user.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El correo no es válido.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El email no es válido.");
         }
 
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El correo ya fue registrado");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Este email ya fue registrado");
         }
 
         if (!isValidPassword(user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La contraseña no cumple con el estandar.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La contraseña no cumple con el estandar. La contraseña debe tener al menos una letra mayúscula, al menos una letra minúscula, a lo menos dos números y un largo mínimo de 6 caracteres.");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -99,7 +99,7 @@ public class UserService {
         Optional<Usuario> usuarioOptional = userRepository.findById(userId);
 
         if (usuarioOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no existe");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no existente");
         }
         if (!isValidUUID(userId.toString())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Formato invalido de Id");
