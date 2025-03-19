@@ -120,7 +120,9 @@ public class UserService {
     }
 
     private boolean isValidPassword(String password) {
-        return password.matches(passwordRegex);
+        Pattern pattern = Pattern.compile(passwordRegex);
+        Matcher matcher = pattern.matcher(password);
+        return matcher.matches();
     }
 
     private boolean isValidEmail(String email) {
